@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Agri Connect - Village Produce to Market</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Add these styles to your existing styles.css or in this style tag */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: modalopen 0.3s;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2e7d32;
+        }
+        
+        .auth-form .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .auth-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .auth-form button {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .auth-form button:hover {
+            background-color: #1b5e20;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .form-footer a {
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+        
+        .forgot-password a {
+            color: #666;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        .social-login {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .social-login p {
+            position: relative;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .social-login p::before,
+        .social-login p::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 30%;
+            height: 1px;
+            background-color: #ddd;
+        }
+        
+        .social-login p::before {
+            left: 0;
+        }
+        
+        .social-login p::after {
+            right: 0;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        
+        .facebook { background-color: #3b5998; }
+        .google { background-color: #db4437; }
+        .twitter { background-color: #1da1f2; }
+        
+        .switch-form {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 600px) {
+            .modal-content {
+                margin: 20% auto;
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Your existing header code -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="https://agri-connect.co.uk/wp-content/uploads/2024/02/Agri-connect-logo-trans.png" alt="Smart Agri Connect Logo">
+                <h1 data-i18n="header.title">Smart Agri Connect</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home" data-i18n="nav.home">Home</a></li>
+                    <li><a href="#about" data-i18n="nav.about">About</a></li>
+                    <li><a href="#services" data-i18n="nav.services">Services</a></li>
+                    <li><a href="#marketplace" data-i18n="nav.marketplace">Marketplace</a></li>
+                    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-right">
+                <div class="language-selector">
+                    <select id="language-select">
+                        <option value="en">English</option>
+                        <option value="te">తెలుగు</option>
+                        <option value="hi">हिंदी</option>
+                    </select>
+                </div>
+                <div class="auth-buttons">
+                    <button class="btn login" data-i18n="auth.login" id="loginBtn">Login</button>
+                    <button class="btn register" data-i18n="auth.register" id="registerBtn">Register</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Your existing content sections (hero, about, services, marketplace, contact) -->
+    <!-- ... -->
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form class="auth-form" id="loginForm">
+                <h2 data-i18n="login.title">Login to Your Account</h2>
+                
+                <div class="form-group">
+                    <label for="loginEmail" data-i18n="login.email">Email Address</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword" data-i18n="login.password">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                
+                <div class="forgot-password">
+                    <a href="#" data-i18n="login.forgot_password">Forgot Password?</a>
+                </div>
+                
+                <button type="submit" data-i18n="login.login_button">Login</button>
+                
+                <div class="social-login">
+                    <p data-i18n="login.social_login">Or login with</p>
+                    <div class="social-icons">
+                        <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="google"><i class="fab fa-google"></i></a>
+                        <a href="#" class="twitter"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="switch-form">
+                    <span data-i18n="login.no_account">Don't have an account?</span>
+                    <a href="#" id="showRegister" data-i18n="login.register_link">Register here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form class="auth-form" id="registerForm">
+                <h2 data-i18n="register.title">Create an Account</h2>
+                
+                <div class="form-group">
+                    <label for="regName" data-i18n="register.name">Full Name</label>
+                    <input type="text" id="regName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regEmail" data-i18n="register.email">Email Address</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPhone" data-i18n="register.phone">Phone Number</label>
+                    <input type="tel" id="regPhone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword" data-i18n="register.password">Password</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regConfirmPassword" data-i18n="register.confirm_password">Confirm Password</label>
+                    <input type="password" id="regConfirmPassword" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regUserType" data-i18n="register.user_type">I am a:</label>
+                    <select id="regUserType" required>
+                        <option value="" data-i18n="register.select_option">Select Option</option>
+                        <option value="farmer" data-i18n="register.farmer">Farmer</option>
+                        <option value="buyer" data-i18n="register.buyer">Buyer</option>
+                        <option value="both" data-i18n="register.both">Both Farmer and Buyer</option>
+                    </select>
+                </div>
+                
+                <button type="submit" data-i18n="register.register_button">Register</button>
+                
+                <div class="switch-form">
+                    <span data-i18n="register.have_account">Already have an account?</span>
+                    <a href="#" id="showLogin" data-i18n="register.login_link">Login here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+ <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2 data-i18n="hero.title">Bridging Farmers And Buyers Seamlessly</h2>
+                <p data-i18n="hero.subtitle">Empowering farmers with direct market access, fair prices, and sustainable growth opportunities.</p>
+                <div class="cta-buttons">
+                    <button class="btn primary" data-i18n="hero.sell_button">Sell Your Products</button>
+                    <button class="btn secondary" data-i18n="hero.buy_button">Buy Products</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://content.jdmagicbox.com/comp/def_content/agriculture-product-dealers/76d9600ff1-agriculture-product-dealers-1-gsq6l.jpg" alt="Happy Farmers">
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title" data-i18n="about.title">About Smart Agri Connect</h2>
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="About Us">
+                </div>
+                <div class="about-text">
+                    <p data-i18n="about.text1">Smart Agri Connect is a platform dedicated to solving the market access problem faced by village farmers. We eliminate middlemen, connect farmers directly with buyers, and ensure fair prices for high-quality produce.</p>
+                    <p data-i18n="about.text2">Our mission is to create a sustainable ecosystem where farmers can thrive while consumers get access to fresh, locally grown products.</p>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <h3>100+</h3>
+                            <p data-i18n="about.farmers">Farmers Connected</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>200+</h3>
+                            <p data-i18n="about.villages">Villages Served</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>70%</h3>
+                            <p data-i18n="about.income">Higher Income for Farmers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title" data-i18n="services.title">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-truck"></i>
+                    <h3 data-i18n="services.service1.title">Direct Market Access</h3>
+                    <p data-i18n="services.service1.desc">Connect directly with buyers without middlemen taking a cut of your profits.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3 data-i18n="services.service2.title">Fair Price Assurance</h3>
+                    <p data-i18n="services.service2.desc">Get fair prices based on real-time market demand and quality of your produce.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3 data-i18n="services.service3.title">Market Trends</h3>
+                    <p data-i18n="services.service3.desc">Access to market trends and demand forecasts to plan your crops better.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3 data-i18n="services.service4.title">Mobile Updates</h3>
+                    <p data-i18n="services.service4.desc">Get order notifications and market updates directly on your mobile.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-seedling"></i>
+                    <h3 data-i18n="services.service5.title">Quality Training</h3>
+                    <p data-i18n="services.service5.desc">Learn best practices to improve quality and fetch better prices.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <h3 data-i18n="services.service6.title">Micro Loans</h3>
+                    <p data-i18n="services.service6.desc">Access to small loans for seeds, equipment, and farm improvements.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="marketplace" class="marketplace">
+        <div class="container">
+            <h2 class="section-title" data-i18n="marketplace.title">Marketplace</h2>
+            <div class="filters">
+                <select id="category-filter">
+                    <option value="all" data-i18n="marketplace.all_products">Available Products</option>
+                    <option value="vegetables" data-i18n="marketplace.vegetables">Vegetables</option>
+                    <option value="fruits" data-i18n="marketplace.fruits">Fruits</option>
+                    <option value="grains" data-i18n="marketplace.grains">Grains</option>
+                    <option value="dairy" data-i18n="marketplace.dairy">Dairy Products</option>
+                    <option value="spices" data-i18n="marketplace.spices">Spices</option>
+                    <option value="pulses" data-i18n="marketplace.pulses">Pulses</option>
+                    <option value="flowers" data-i18n="marketplace.flowers">Flowers</option>
+                    <option value="livestock" data-i18n="marketplace.livestock">Livestock</option>
+                    <option value="organic" data-i18n="marketplace.organic">Organic Produce</option>
+                    <option value="plants" data-i18n="marketplace.plants">Nursery & Plants</option>
+                </select>
+                <select id="location-filter">
+                    <option value="all" data-i18n="marketplace.all_locations">Location</option>
+                    <option value="ellamachilli" data-i18n="marketplace.ellamachilli">Ellamachilli</option>
+                    <option value="anakapalli" data-i18n="marketplace.anakapalli">Anakapalli</option>
+                    <option value="vizianagaram" data-i18n="marketplace.vizianagaram">Vizianagaram</option>
+                    <option value="srikakulam" data-i18n="marketplace.srikakulam">Srikakulam</option>
+                </select>
+            </div>
+            <div class="products-grid" id="products-container">
+                <!-- Products will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title" data-i18n="contact.title">Contact Us</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p data-i18n="contact.address">123 Agri Tech Park, Bangalore, India - 560001</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <p data-i18n="contact.phone">+91 9876543210 (Farmers Helpline)</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>connect@smartagriconnect.org</p>
+                    </div>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" id="name" data-i18n-placeholder="contact.form.name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" data-i18n-placeholder="contact.form.email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="phone" data-i18n-placeholder="contact.form.phone" placeholder="Your Phone">
+                        </div>
+                        <div class="form-group">
+                            <select id="subject" required>
+                        
